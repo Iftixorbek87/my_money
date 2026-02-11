@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block title %}Tranzaksiyalar Ro'yxati{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h2>📋 Barcha Tranzaksiyalar</h2>
+        <a href="{% url 'add_transaction' %}" class="btn-primary" style="width: auto; padding: 10px 20px; margin: 0;">
+            ➕ Yangi qo'shish
+        </a>
+    </div>
+    
+    <!-- Filtrlar -->
+    <form method="get" style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="type">Turi</label>
+                <select id="type" name="type">
+                    <option value="">Hammasi</option>
+                    <option value="income" {% if request.GET.type == 'income' %}selected{% endif %}>Kirim</option>
+                    <option value="expense" {% if request.GET.type == 'expense' %}selected{% endif %}>Chiqim</option>
+                </select>
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="currency">Valyuta</label>
+                <select id="currency" name="currency">
+                    <option value="">Hammasi</option>
+                    <option value="UZS" {% if request.GET.currency == 'UZS' %}selected{% endif %}>So'm</option>
+                    <option value="USD" {% if request.GET.currency == 'USD' %}selected{% endif %}>Dollar</option>
+                </select>
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="date_from">Dan</label>
+                <input type="date" id="date_from" name="date_from" value="{{ request.GET.date_from }}">
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="date_to">Gacha</label>
+                <input type="date" id="date_to" name="date_to" value="{{ request.GET.date_to }}">
+            </div>
+        </div>
+        
+        <div style="margin-top: 15px; text-align: center;">
+            <button type="submit" class="btn-primary" style="width: auto; padding: 10px 30px;">
+                🔍 Qidirish
+            </button>
+            <a href="{% url 'transaction_list' %}" class="btn-primary" style="width: auto; padding: 10px 30px; background: rgba(255, 255, 255, 0.2); display: inline-block; text-decoration: none;">
+                ❌ Tozalash
+            </a>
+        </div>
+    </form>
+    
+    <!-- Tranzaksiyalar ro'yxati -->
+    {% if transactions %}
+    <ul class="transaction-list">
+        {% for transaction in transactions %}
+        <li class="transaction-item transaction-{{ transaction.transaction_type }}">
+            <div style="flex: 1;">
+                <div style="font-weight: bold; margin-bottom: 5px; font-size: 18px;">
+                    {% if transaction.transaction_type == 'income' %}
+                        ✅ Kirim
+                    {% else %}
+                        ❌ Chiqim
+                    {% endif %}
+                    {% if transaction.category %}
+                        - {{ transaction.category }}
+                    {% endif %}
+                </div>
+                <div style="font-size: 14px; opacity: 0.8;">
+                    📅 {{ transaction.date|date:"d.m.Y" }}
+                    {% if transaction.description %}
+                        <br>📝 {{ transaction.description }}
+                    {% endif %}
+                </div>
+            </div>
+            <div style="text-align: right;">
+                <div style="font-size: 28px; font-weight: bold; margin-bottom: 5px;">
+                    {% if transaction.transaction_type == 'income' %}
+                        +
+                    {% else %}
+                        -
+                    {% endif %}
+                    {{ transaction.amount|floatformat:2 }}
+                    {% if transaction.currency == 'UZS' %}so'm{% else %}${% endif %}
+                </div>
+                <form method="post" action="{% url 'delete_transaction' transaction.pk %}" style="display: inline;" 
+                      onsubmit="return confirm('Rostdan ham o\'chirmoqchimisiz?');">
+                    {% csrf_token %}
+                    <button type="submit" style="background: #f87171; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 12px;">
+                        🗑️ O'chirish
+                    </button>
+                </form>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    
+    <!-- Jami hisob -->
+    <div style="margin-top: 30px; padding: 20px; background: rgba(255, 255, 255, 0.1); border-radius: 10px;">
+        <h3 style="margin-bottom: 15px;">📊 Jami Natija:</h3>
+        {% load custom_filters %}
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+            <div>
+                <strong>UZS Kirim:</strong> 
+                {{ transactions|filter_by:'currency,UZS'|filter_by:'transaction_type,income'|sum_amount|floatformat:2 }} so'm
+            </div>
+            <div>
+                <strong>UZS Chiqim:</strong> 
+                {{ transactions|filter_by:'currency,UZS'|filter_by:'transaction_type,expense'|sum_amount|floatformat:2 }} so'm
+            </div>
+            <div>
+                <strong>USD Kirim:</strong> 
+                ${{ transactions|filter_by:'currency,USD'|filter_by:'transaction_type,income'|sum_amount|floatformat:2 }}
+            </div>
+            <div>
+                <strong>USD Chiqim:</strong> 
+                ${{ transactions|filter_by:'currency,USD'|filter_by:'transaction_type,expense'|sum_amount|floatformat:2 }}
+            </div>
+        </div>
+    </div>
+    
+    {% else %}
+    <div style="text-align: center; padding: 60px 20px; opacity: 0.5;">
+        <div style="font-size: 60px; margin-bottom: 20px;">📭</div>
+        <h3>Tranzaksiyalar topilmadi</h3>
+        <p style="margin-top: 10px;">Filtrlarni o'zgartiring yoki yangi tranzaksiya qo'shing</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

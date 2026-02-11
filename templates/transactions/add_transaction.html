@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}Tranzaksiya Qo'shish{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+    <div class="card">
+        <h2 style="margin-bottom: 30px;">➕ Yangi Tranzaksiya</h2>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="transaction_type">Tranzaksiya turi</label>
+                <select id="transaction_type" name="transaction_type" required onchange="updateCategories()">
+                    <option value="income">✅ Kirim</option>
+                    <option value="expense">❌ Chiqim</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="amount">Summa</label>
+                <input type="number" id="amount" name="amount" step="0.01" min="0" placeholder="0.00" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="currency">Valyuta</label>
+                <select id="currency" name="currency" required>
+                    <option value="UZS">💵 So'm (UZS)</option>
+                    <option value="USD">💲 Dollar (USD)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="category">Kategoriya</label>
+                <input type="text" id="category" name="category" placeholder="Masalan: Maosh, Oziq-ovqat, Transport" list="categoryList">
+                <datalist id="categoryList">
+                    <!-- JavaScript orqali to'ldiriladi -->
+                </datalist>
+            </div>
+            
+            <div class="form-group">
+                <label for="description">Tavsif (ixtiyoriy)</label>
+                <textarea id="description" name="description" rows="3" placeholder="Qo'shimcha ma'lumot..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="date">Sana</label>
+                <input type="date" id="date" name="date" value="{{ today|date:'Y-m-d' }}" required>
+            </div>
+            
+            <button type="submit" class="btn-primary">Saqlash</button>
+            <a href="{% url 'dashboard' %}" class="btn-primary" style="background: rgba(255, 255, 255, 0.2); text-align: center; display: block; text-decoration: none; margin-top: 10px;">
+                Bekor qilish
+            </a>
+        </form>
+    </div>
+</div>
+
+<script>
+// Kategoriyalar ro'yxati
+const categories = {
+    income: ['Maosh', 'Bonuslar', 'Biznes', 'Investitsiya', 'Sovg\'a', 'Boshqa kirim'],
+    expense: ['Oziq-ovqat', 'Transport', 'Kommunal xizmatlar', 'Uy-joy', 'Kiyim', 'Tibbiyot', 
+              'Ta\'lim', 'Ko\'ngil ochar', 'Aloqa', 'Sport', 'Sovg\'alar', 'Boshqa chiqim']
+};
+
+// Tranzaksiya turiga qarab kategoriyalarni yangilash
+function updateCategories() {
+    const transactionType = document.getElementById('transaction_type').value;
+    const datalist = document.getElementById('categoryList');
+    
+    datalist.innerHTML = '';
+    categories[transactionType].forEach(category => {
+        const option = document.createElement('option');
+        option.value = category;
+        datalist.appendChild(option);
+    });
+}
+
+// Sahifa yuklanganda kategoriyalarni o'rnatish
+updateCategories();
+
+// Bugungi sanani o'rnatish
+document.getElementById('date').valueAsDate = new Date();
+</script>
+{% endblock %}

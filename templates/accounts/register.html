@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Ro'yxatdan o'tish - Moliyaviy Boshqaruv{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        display: block !important;
+    }
+    .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 50px auto;">
+    <div class="card">
+        <h2 style="text-align: center; margin-bottom: 30px;">📝 Ro'yxatdan O'tish</h2>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="first_name">Ism</label>
+                <input type="text" id="first_name" name="first_name" placeholder="Ismingiz">
+            </div>
+            
+            <div class="form-group">
+                <label for="last_name">Familiya</label>
+                <input type="text" id="last_name" name="last_name" placeholder="Familiyangiz">
+            </div>
+            
+            <div class="form-group">
+                <label for="username">Foydalanuvchi nomi</label>
+                <input type="text" id="username" name="username" placeholder="Foydalanuvchi nomini tanlang" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Parol</label>
+                <input type="password" id="password" name="password" placeholder="Parol o'rnating" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password2">Parolni tasdiqlang</label>
+                <input type="password" id="password2" name="password2" placeholder="Parolni qayta kiriting" required>
+            </div>
+            
+            <button type="submit" class="btn-primary">Ro'yxatdan o'tish</button>
+        </form>
+        
+        <div style="text-align: center; margin-top: 25px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+            <p style="margin-bottom: 15px; color: #64748b;">Hisobingiz bormi?</p>
+            <a href="{% url 'login' %}" style="display: inline-block; background-color: #4ade80; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: 500; transition: background-color 0.2s ease-in-out;" 
+               onmouseover="this.style.backgroundColor='#22c55e'" 
+               onmouseout="this.style.backgroundColor='#4ade80'">
+                Kirish
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+
+{% block title %}Bosh sahifa - Moliyaviy Boshqaruv{% endblock %}
+
+{% block content %}
+<div class="stats-grid">
+    <div class="balance-card">
+        <div class="balance-label">Umumiy Balans (UZS)</div>
+        <div class="balance-amount">{{ total_uzs|floatformat:2 }} so'm</div>
+        <div style="margin-top: 20px; font-size: 14px;">
+            <div>Kirim: {{ income_uzs_month|floatformat:2 }} so'm</div>
+            <div>Chiqim: {{ expense_uzs_month|floatformat:2 }} so'm</div>
+        </div>
+    </div>
+    
+    <div class="balance-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+        <div class="balance-label">Umumiy Balans (USD)</div>
+        <div class="balance-amount">${{ total_usd|floatformat:2 }}</div>
+        <div style="margin-top: 20px; font-size: 14px;">
+            <div>Kirim: ${{ income_usd_month|floatformat:2 }}</div>
+            <div>Chiqim: ${{ expense_usd_month|floatformat:2 }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <h2 style="margin-bottom: 20px;">📊 Oylik Statistika</h2>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+        <div>
+            <h3 style="text-align: center; margin-bottom: 20px;">UZS</h3>
+            <canvas id="chartUZS"></canvas>
+        </div>
+        
+        <div>
+            <h3 style="text-align: center; margin-bottom: 20px;">USD</h3>
+            <canvas id="chartUSD"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <h2 style="margin-bottom: 20px;">📋 Oxirgi Tranzaksiyalar</h2>
+    
+    {% if recent_transactions %}
+    <ul class="transaction-list">
+        {% for transaction in recent_transactions %}
+        <li class="transaction-item transaction-{{ transaction.transaction_type }}">
+            <div>
+                <div style="font-weight: bold; margin-bottom: 5px;">
+                    {% if transaction.transaction_type == 'income' %}
+                        ✅ Kirim
+                    {% else %}
+                        ❌ Chiqim
+                    {% endif %}
+                    {% if transaction.category %}
+                        - {{ transaction.category }}
+                    {% endif %}
+                </div>
+                <div style="font-size: 14px; opacity: 0.8;">
+                    {{ transaction.date|date:"d.m.Y" }}
+                    {% if transaction.description %}
+                        - {{ transaction.description }}
+                    {% endif %}
+                </div>
+            </div>
+            <div style="font-size: 24px; font-weight: bold;">
+                {% if transaction.transaction_type == 'income' %}
+                    +
+                {% else %}
+                    -
+                {% endif %}
+                {{ transaction.amount|floatformat:2 }}
+                {% if transaction.currency == 'UZS' %}so'm{% else %}${% endif %}
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <div style="text-align: center; padding: 40px; opacity: 0.5;">
+        <p>Hali tranzaksiyalar yo'q</p>
+        <p style="margin-top: 10px;">
+            <a href="{% url 'add_transaction' %}" class="btn-primary" style="display: inline-block; width: auto;">
+                Birinchi tranzaksiyani qo'shing
+            </a>
+        </p>
+    </div>
+    {% endif %}
+</div>
+
+{% if recent_transactions %}
+<div style="text-align: center; margin-top: 20px;">
+    <a href="{% url 'transaction_list' %}" class="btn-primary" style="display: inline-block; width: auto; padding: 15px 30px;">
+        Barcha tranzaksiyalarni ko'rish
+    </a>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// UZS Donut Chart
+const ctxUZS = document.getElementById('chartUZS').getContext('2d');
+const dataUZS = {{ chart_data_uzs|safe }};
+
+new Chart(ctxUZS, {
+    type: 'doughnut',
+    data: {
+        labels: ['Kirim', 'Chiqim'],
+        datasets: [{
+            data: [dataUZS.income, dataUZS.expense],
+            backgroundColor: [
+                'rgba(74, 222, 128, 0.8)',
+                'rgba(248, 113, 113, 0.8)'
+            ],
+            borderColor: [
+                'rgba(74, 222, 128, 1)',
+                'rgba(248, 113, 113, 1)'
+            ],
+            borderWidth: 2
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    color: '#fff',
+                    font: {
+                        size: 14
+                    }
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        let label = context.label || '';
+                        if (label) {
+                            label += ': ';
+                        }
+                        label += context.parsed.toFixed(2) + ' so\'m';
+                        return label;
+                    }
+                }
+            }
+        }
+    }
+});
+
+// USD Donut Chart
+const ctxUSD = document.getElementById('chartUSD').getContext('2d');
+const dataUSD = {{ chart_data_usd|safe }};
+
+new Chart(ctxUSD, {
+    type: 'doughnut',
+    data: {
+        labels: ['Kirim', 'Chiqim'],
+        datasets: [{
+            data: [dataUSD.income, dataUSD.expense],
+            backgroundColor: [
+                'rgba(74, 222, 128, 0.8)',
+                'rgba(248, 113, 113, 0.8)'
+            ],
+            borderColor: [
+                'rgba(74, 222, 128, 1)',
+                'rgba(248, 113, 113, 1)'
+            ],
+            borderWidth: 2
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    color: '#fff',
+                    font: {
+                        size: 14
+                    }
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        let label = context.label || '';
+                        if (label) {
+                            label += ': ';
+                        }
+                        label += '$' + context.parsed.toFixed(2);
+                        return label;
+                    }
+                }
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

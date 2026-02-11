@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Tranzaksiyani O'chirish{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 100px auto;">
+    <div class="card">
+        <h2 style="text-align: center; margin-bottom: 30px; color: #f87171;">⚠️ Tranzaksiyani O'chirish</h2>
+        
+        <div style="background: rgba(248, 113, 113, 0.1); padding: 20px; border-radius: 10px; border-left: 4px solid #f87171; margin-bottom: 30px;">
+            <p style="margin-bottom: 15px;">Siz quyidagi tranzaksiyani o'chirmoqchisiz:</p>
+            
+            <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 8px;">
+                <div style="margin-bottom: 10px;">
+                    <strong>Turi:</strong> 
+                    {% if transaction.transaction_type == 'income' %}
+                        ✅ Kirim
+                    {% else %}
+                        ❌ Chiqim
+                    {% endif %}
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <strong>Summa:</strong> 
+                    {{ transaction.amount|floatformat:2 }}
+                    {% if transaction.currency == 'UZS' %}so'm{% else %}${% endif %}
+                </div>
+                {% if transaction.category %}
+                <div style="margin-bottom: 10px;">
+                    <strong>Kategoriya:</strong> {{ transaction.category }}
+                </div>
+                {% endif %}
+                <div>
+                    <strong>Sana:</strong> {{ transaction.date|date:"d.m.Y" }}
+                </div>
+            </div>
+        </div>
+        
+        <p style="text-align: center; margin-bottom: 30px; opacity: 0.8;">
+            Bu amalni ortga qaytarib bo'lmaydi. Rostdan ham davom etmoqchimisiz?
+        </p>
+        
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn-danger">
+                🗑️ Ha, O'chirish
+            </button>
+            <a href="{% url 'transaction_list' %}" class="btn-primary" style="background: rgba(255, 255, 255, 0.2); text-align: center; display: block; text-decoration: none; margin-top: 10px;">
+                ❌ Yo'q, Bekor Qilish
+            </a>
+        </form>
+    </div>
+</div>
+{% endblock %}
