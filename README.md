@@ -158,7 +158,7 @@ MIT License - bepul va ochiq manba
 
 ## 👨‍💻 Muallif
 
-Claude AI yordamida yaratildi
+Odilov Iftixorbek
 
 ## 🤝 Qo'llab-quvvatlash
 
