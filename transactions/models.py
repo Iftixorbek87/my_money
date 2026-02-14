@@ -57,22 +57,15 @@ class Transaction(models.Model):
 
     def save(self, *args, **kwargs):
         """Tranzaksiya saqlananda balansni yangilash"""
-        from decimal import Decimal
-        
         is_new = self.pk is None
         
         if is_new:
-            # Ensure we're working with Decimal for the amount
-            amount = Decimal(str(self.amount))
-            
             # Yangi tranzaksiya
             if self.transaction_type == 'income':
-                self.account.balance = Decimal(str(self.account.balance)) + amount
+                self.account.balance += self.amount
             else:
-                self.account.balance = Decimal(str(self.account.balance)) - amount
-                
-            # Save the updated account balance
-            self.account.save(update_fields=['balance'])
+                self.account.balance -= self.amount
+            self.account.save()
         
         super().save(*args, **kwargs)
 

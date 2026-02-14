@@ -12,8 +12,7 @@ def add_transaction_view(request):
     """Tranzaksiya qo'shish"""
     if request.method == 'POST':
         transaction_type = request.POST.get('transaction_type')
-        from decimal import Decimal
-        amount = Decimal(request.POST.get('amount'))
+        amount = float(request.POST.get('amount'))
         currency = request.POST.get('currency')
         category = request.POST.get('category', '')
         description = request.POST.get('description', '')
