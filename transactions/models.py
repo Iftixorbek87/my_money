@@ -57,24 +57,28 @@ class Transaction(models.Model):
 
     def save(self, *args, **kwargs):
         """Tranzaksiya saqlananda balansni yangilash"""
+        from decimal import Decimal
+        
         is_new = self.pk is None
         
         if is_new:
             # Yangi tranzaksiya
             if self.transaction_type == 'income':
-                self.account.balance += self.amount
+                self.account.balance = Decimal(str(self.account.balance)) + Decimal(str(self.amount))
             else:
-                self.account.balance -= self.amount
+                self.account.balance = Decimal(str(self.account.balance)) - Decimal(str(self.amount))
             self.account.save()
         
         super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         """Tranzaksiya o'chirilganda balansni yangilash"""
+        from decimal import Decimal
+        
         if self.transaction_type == 'income':
-            self.account.balance -= self.amount
+            self.account.balance = Decimal(str(self.account.balance)) - Decimal(str(self.amount))
         else:
-            self.account.balance += self.amount
+            self.account.balance = Decimal(str(self.account.balance)) + Decimal(str(self.amount))
         self.account.save()
         
         super().delete(*args, **kwargs)

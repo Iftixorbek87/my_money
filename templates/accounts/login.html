@@ -11,6 +11,25 @@
         margin-left: 0 !important;
         width: 100% !important;
     }
+    .btn-register {
+        display: inline-block;
+        background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+        color: #fff;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        margin-top: 10px;
+        font-weight: 500;
+    }
+    .btn-register:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(74, 222, 128, 0.3);
+        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    }
 </style>
 {% endblock %}
 
@@ -36,7 +55,8 @@
         </form>
         
         <div style="text-align: center; margin-top: 20px;">
-            <p>Hisobingiz yo'qmi? <a href="{% url 'register' %}" style="color: #4ade80;">Ro'yxatdan o'ting</a></p>
+            <p>Hisobingiz yo'qmi?</p>
+            <a href="{% url 'register' %}" class="btn-register">Ro'yxatdan o'ting</a>
         </div>
     </div>
 </div>

@@ -435,7 +435,11 @@
                 transform: translateX(-100%);
             }
             
-            .sidebar.active {
+            .sidebar.hidden {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar:not(.hidden) {
                 transform: translateX(0);
             }
             
@@ -444,8 +448,10 @@
                 width: 100%;
             }
             
-            .menu-toggle-btn.active {
-                left: 20px;
+            .menu-toggle-btn {
+                display: flex !important;
+                opacity: 1 !important;
+                pointer-events: auto !important;
             }
         }
     </style>
