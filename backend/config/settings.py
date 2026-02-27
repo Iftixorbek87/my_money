@@ -67,7 +67,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 import dj_database_url
 
 # Production database (Render PostgreSQL)
-if 'DATABASE_URL' in os.environ:
+if 'DATABASE_URL' in os.environ and os.environ.get('DATABASE_URL'):
     DATABASES = {
         'default': dj_database_url.parse(os.environ.get('DATABASE_URL'))
     }
