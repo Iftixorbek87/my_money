@@ -1,1 +1,23 @@
-{"version": 2, "builds": [{"src": "config/wsgi.py", "use": "@vercel/python"}], "routes": [{"src": "/static/(.*)", "dest": "/static/$1"}, {"src": "/media/(.*)", "dest": "/media/$1"}, {"src": "/(.*)", "dest": "config/wsgi.py"}]}
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/index.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/static/(.*)",
+      "dest": "/backend/static/$1"
+    },
+    {
+      "src": "/media/(.*)", 
+      "dest": "/backend/media/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "api/index.py"
+    }
+  ]
+}

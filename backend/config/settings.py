@@ -17,7 +17,7 @@ SECRET_KEY = env('SECRET_KEY', default='your-secret-key-here')
 
 DEBUG = env.bool('DEBUG', default=False)
 
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1', 'onrender.com', '*.onrender.com'])
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1', 'onrender.com', '*.onrender.com', 'vercel.app', '*.vercel.app'])
 
 INSTALLED_APPS = [
     'django.contrib.admin',
