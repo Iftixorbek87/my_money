@@ -9,11 +9,11 @@
   "routes": [
     {
       "src": "/static/(.*)",
-      "dest": "/backend/staticfiles/$1"
+      "dest": "/static/$1"
     },
     {
       "src": "/media/(.*)", 
-      "dest": "/backend/media/$1"
+      "dest": "/media/$1"
     },
     {
       "src": "/(.*)",
